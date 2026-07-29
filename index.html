@@ -310,6 +310,62 @@
 <footer>made by unity</footer>
 
 <script>
+
+    // ============================================================
+  // VIEW COUNTER
+  // Free, no-signup counting API (successor to the old countapi.xyz).
+  // Every visitor who loads the page increments this shared number.
+  // Keys are public — anyone who knows the key can bump/read it.
+  // ============================================================
+  (function viewCounter(){
+    const COUNTER_KEY = 'unity-cpu-bio-frog-2026'; // change to reset, keep it unique
+    const el = document.getElementById('viewCount');
+    fetch(`https://countapi.mileshilliard.com/api/v1/hit/${COUNTER_KEY}`)
+      .then(res => res.json())
+      .then(data => { if (el) el.textContent = Number(data.value).toLocaleString(); })
+      .catch(() => { if (el) el.textContent = '—'; });
+  })();
+
+  // ============================================================
+  // LIKE BUTTON
+  // Same free counting API, but only increments on click, and only
+  // once per browser (tracked with localStorage so people can't
+  // spam it by clicking repeatedly). On load we just READ the
+  // current count with /get so opening the page doesn't count as
+  // a like.
+  // ============================================================
+  (function likeButton(){
+    const LIKE_KEY = 'unity-cpu-bio-frog-2026-likes'; // change to reset, keep it unique
+    const STORAGE_FLAG = 'liked_' + LIKE_KEY;
+    const btn = document.getElementById('likeBtn');
+    const countEl = document.getElementById('likeCount');
+    if (!btn || !countEl) return;
+
+    function render(value, liked){
+      countEl.textContent = Number(value || 0).toLocaleString();
+      btn.classList.toggle('liked', !!liked);
+    }
+
+    const alreadyLiked = localStorage.getItem(STORAGE_FLAG) === '1';
+
+    fetch(`https://countapi.mileshilliard.com/api/v1/get/${LIKE_KEY}`)
+      .then(res => res.json())
+      .then(data => render(data.value, alreadyLiked))
+      .catch(() => render(0, alreadyLiked));
+
+    btn.addEventListener('click', () => {
+      if (localStorage.getItem(STORAGE_FLAG) === '1') return; // one like per browser
+      fetch(`https://countapi.mileshilliard.com/api/v1/hit/${LIKE_KEY}`)
+        .then(res => res.json())
+        .then(data => {
+          localStorage.setItem(STORAGE_FLAG, '1');
+          render(data.value, true);
+          btn.classList.add('pulse');
+          setTimeout(() => btn.classList.remove('pulse'), 350);
+        })
+        .catch(() => {});
+    });
+  })();
   // ============================================================
   // BACKGROUND MEDIA CONFIG
   // Set type to 'image' or 'video' and paste your link in url.
