@@ -33,8 +33,6 @@
   }
 
   /* ============ BACKGROUND MEDIA LAYER ============ */
-  /* Sits behind everything else. Fill in BACKGROUND config near the
-     bottom of the script to use an image or video. */
   #bgMediaWrap{
     position:fixed;
     inset:0;
@@ -51,7 +49,6 @@
     object-fit:cover;
     object-position:center;
   }
-  /* dark overlay so text/panels stay readable on top of any media */
   #bgMediaWrap::after{
     content:"";
     position:absolute;
@@ -229,21 +226,7 @@
   .invite-list a .arrow{opacity:0.5;transition:transform .2s;}
   .invite-list a:hover .arrow{transform:translateX(2px);opacity:1;}
 
-  footer{
-    position:fixed;bottom:14px;left:0;right:0;
-    text-align:center;
-    font-size:11px;
-    color:#5c4a73;
-    letter-spacing:0.02em;
-    z-index:2;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .card{animation:none;}
-    .avatar-wrap{animation:none;}
-    .vignette{animation:none;}
-  }
-    /* ============ VIEW COUNTER + LIKE BUTTON ============ */
+  /* ============ VIEW COUNTER + LIKE BUTTON ============ */
   .meta-row{
     display:flex;
     align-items:center;
@@ -317,7 +300,6 @@
 <body>
 
 <!-- ============ BACKGROUND MEDIA (image or video) ============ -->
-<!-- Configure this in the BACKGROUND object near the bottom of the script -->
 <div id="bgMediaWrap"></div>
 
 <div class="vignette"></div>
@@ -368,13 +350,11 @@
   </div>
 
   <!-- ============ DISCORD INVITES ============ -->
-  <!-- Edit the INVITES array in the script below to add/remove servers -->
   <div class="panel" id="panel-invites">
     <div class="panel-inner">
       <ul class="invite-list" id="inviteList"></ul>
     </div>
   </div>
-</div>
 
   <!-- ============ VIEW COUNTER + LIKE BUTTON ============ -->
   <div class="meta-row">
@@ -393,73 +373,12 @@
 
 <script>
 
-    // ============================================================
-  // VIEW COUNTER
-  // Free, no-signup counting API (successor to the old countapi.xyz).
-  // Every visitor who loads the page increments this shared number.
-  // Keys are public — anyone who knows the key can bump/read it.
-  // ============================================================
-  (function viewCounter(){
-    const COUNTER_KEY = 'unity-cpu-bio-frog-2026'; // change to reset, keep it unique
-    const el = document.getElementById('viewCount');
-    fetch(`https://countapi.mileshilliard.com/api/v1/hit/${COUNTER_KEY}`)
-      .then(res => res.json())
-      .then(data => { if (el) el.textContent = Number(data.value).toLocaleString(); })
-      .catch(() => { if (el) el.textContent = '—'; });
-  })();
-
-  // ============================================================
-  // LIKE BUTTON
-  // Same free counting API, but only increments on click, and only
-  // once per browser (tracked with localStorage so people can't
-  // spam it by clicking repeatedly). On load we just READ the
-  // current count with /get so opening the page doesn't count as
-  // a like.
-  // ============================================================
-  (function likeButton(){
-    const LIKE_KEY = 'unity-cpu-bio-frog-2026-likes'; // change to reset, keep it unique
-    const STORAGE_FLAG = 'liked_' + LIKE_KEY;
-    const btn = document.getElementById('likeBtn');
-    const countEl = document.getElementById('likeCount');
-    if (!btn || !countEl) return;
-
-    function render(value, liked){
-      countEl.textContent = Number(value || 0).toLocaleString();
-      btn.classList.toggle('liked', !!liked);
-    }
-
-    const alreadyLiked = localStorage.getItem(STORAGE_FLAG) === '1';
-
-    fetch(`https://countapi.mileshilliard.com/api/v1/get/${LIKE_KEY}`)
-      .then(res => res.json())
-      .then(data => render(data.value, alreadyLiked))
-      .catch(() => render(0, alreadyLiked));
-
-    btn.addEventListener('click', () => {
-      if (localStorage.getItem(STORAGE_FLAG) === '1') return; // one like per browser
-      fetch(`https://countapi.mileshilliard.com/api/v1/hit/${LIKE_KEY}`)
-        .then(res => res.json())
-        .then(data => {
-          localStorage.setItem(STORAGE_FLAG, '1');
-          render(data.value, true);
-          btn.classList.add('pulse');
-          setTimeout(() => btn.classList.remove('pulse'), 350);
-        })
-        .catch(() => {});
-    });
-  })();
   // ============================================================
   // BACKGROUND MEDIA CONFIG
-  // Set type to 'image' or 'video' and paste your link in url.
-  // Leave type as 'none' to keep the plain black background.
-  //   - image: any direct image link (.jpg/.png/.webp/.gif)
-  //   - video: any direct video link (.mp4/.webm) — it will
-  //            autoplay muted, loop, and cover the whole page
-  // ===========================================================
+  // ============================================================
   const BACKGROUND = {
-    type: 'video',   // 'image' | 'video' | 'none'
-    url: 'https://github.com/unity-cpu/frogs-bio/raw/refs/heads/main/TikSave.io_7622110912962481439.mov'         // e.g. 'https://i.imgur.com/yourimage.jpg'
-                    // or   'https://example.com/yourvideo.mp4'
+    type: 'video',
+    url: 'https://media-cdn2.lawlietbot.xyz/media/realbooru/d0/57/d0574d3ade48d44737999a06306df701.mp4?id=990722'
   };
 
   (function setupBackground(){
@@ -479,6 +398,54 @@
       wrap.appendChild(vid);
       vid.play().catch(() => {});
     }
+  })();
+
+  // ============================================================
+  // VIEW COUNTER
+  // ============================================================
+  (function viewCounter(){
+    const COUNTER_KEY = 'unity-cpu-bio-frog-2026';
+    const el = document.getElementById('viewCount');
+    fetch(`https://countapi.mileshilliard.com/api/v1/hit/${COUNTER_KEY}`)
+      .then(res => res.json())
+      .then(data => { if (el) el.textContent = Number(data.value).toLocaleString(); })
+      .catch(() => { if (el) el.textContent = '—'; });
+  })();
+
+  // ============================================================
+  // LIKE BUTTON
+  // ============================================================
+  (function likeButton(){
+    const LIKE_KEY = 'unity-cpu-bio-frog-2026-likes';
+    const STORAGE_FLAG = 'liked_' + LIKE_KEY;
+    const btn = document.getElementById('likeBtn');
+    const countEl = document.getElementById('likeCount');
+    if (!btn || !countEl) return;
+
+    function render(value, liked){
+      countEl.textContent = Number(value || 0).toLocaleString();
+      btn.classList.toggle('liked', !!liked);
+    }
+
+    const alreadyLiked = localStorage.getItem(STORAGE_FLAG) === '1';
+
+    fetch(`https://countapi.mileshilliard.com/api/v1/get/${LIKE_KEY}`)
+      .then(res => res.json())
+      .then(data => render(data.value, alreadyLiked))
+      .catch(() => render(0, alreadyLiked));
+
+    btn.addEventListener('click', () => {
+      if (localStorage.getItem(STORAGE_FLAG) === '1') return;
+      fetch(`https://countapi.mileshilliard.com/api/v1/hit/${LIKE_KEY}`)
+        .then(res => res.json())
+        .then(data => {
+          localStorage.setItem(STORAGE_FLAG, '1');
+          render(data.value, true);
+          btn.classList.add('pulse');
+          setTimeout(() => btn.classList.remove('pulse'), 350);
+        })
+        .catch(() => {});
+    });
   })();
 
   // ============ CONFIG: discord invites ============
@@ -540,9 +507,6 @@
   });
 
   // ============ MUSIC (background, no visible control) ============
-  // Browsers block autoplay WITH sound, no way around that. Standard
-  // workaround: autoplay muted on load, unmute on first user interaction
-  // anywhere on the page (click/tap/keypress).
   const bgm = document.getElementById('bgm');
   let unmutedYet = false;
 
@@ -563,10 +527,6 @@
   window.addEventListener('touchstart', unmuteOnFirstInteraction);
 
   // ============ SWEEP TEXT ANIMATOR ============
-  // Ported from the Unity C# SweepTextAnimator: for each character, lerp
-  // between colorA (purple) and colorB (white) based on a moving offset
-  // so a "wave" of color sweeps across the text on a loop. No bounce/
-  // rotate/scale — color + glow only, per the "don't want it bouncing" note.
   const sweepTitle = document.getElementById('sweepTitle');
   const sweepContent = sweepTitle.textContent;
   sweepTitle.innerHTML = '';
@@ -578,10 +538,10 @@
     return span;
   });
 
-  const SWEEP_DURATION = 1.1;   // seconds
-  const SWEEP_SPEED = 0.7;      // was 2.2 — slowed down
-  const COLOR_A = [255, 60, 60];    // red
-  const COLOR_B = [60, 100, 255];   // blue
+  const SWEEP_DURATION = 1.1;
+  const SWEEP_SPEED = 0.7;
+  const COLOR_A = [255, 60, 60];
+  const COLOR_B = [60, 100, 255];
 
   function lerp(a, b, t){ return a + (b - a) * t; }
   function repeat(t, length){ return t - Math.floor(t / length) * length; }
